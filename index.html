@@ -28,8 +28,9 @@
             margin: 15px 0;
         }
         .qrcode {
-            width: 300px;
-            max-width: 85vw;
+            width: 100%;                  /* 关键：宽度自适应 */
+            max-width: 340px;             /* 最大不超过340px（推荐大小） */
+            height: auto;                 /* 高度自动，等比例缩放 */
             margin: 30px 0;
             border: 12px solid #fff;
             border-radius: 24px;
@@ -48,7 +49,7 @@
     <h1>昨天是疯狂星期四</h1>
     <p>请v我50 😂</p>
     
-    <img src="https://ibb.co/tMgqLGHR" 
+    <img src="https://i.ibb.co/Kjd2KP5n/1002.png" 
          alt="收款码" 
          class="qrcode">
 
