@@ -23,55 +23,56 @@
             width: 100%; height: 100%;
             display: flex;
             flex-direction: column;
+            justify-content: space-between;   /* 关键：让上下内容拉开 */
             align-items: center;
-            justify-content: center;
             text-align: center;
             z-index: 10;
-            padding-bottom: 80px; /* 为下方按钮留出空间 */
+            padding: 40px 20px;   /* 顶部和底部留一点安全边距 */
         }
         
-        .error-content {
-            margin-top: -60px; /* 把404和标题向上移动 */
+        /* 上半部分内容 - 尽量靠近顶部 */
+        .error-top {
+            margin-top: 30px;   /* 可根据需要微调 */
         }
         
         .error-code {
-            font-size: clamp(5rem, 18vw, 9rem);
+            font-size: clamp(4.5rem, 18vw, 8.5rem);
             font-weight: 700;
             color: #555;
             line-height: 1;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
         
         .error-title {
             font-size: clamp(1.35rem, 5vw, 1.9rem);
             color: #aaa;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
         }
         
         .error-desc {
             font-size: 1.05rem;
             color: #777;
             max-width: 360px;
-            margin: 0 auto 60px;
             line-height: 1.65;
         }
 
-        /* 重新连接 - 无框纯文字，低调小字体 */
+        /* 重新连接按钮 - 尽量靠近底部，无框小字体 */
         .reload-btn {
-            font-size: 0.85rem;           /* 字体再小一点 */
-            color: #777;
+            font-size: 0.82rem;
+            color: #666;
             background: none;
             border: none;
-            padding: 8px 16px;
+            padding: 12px 20px;
             cursor: pointer;
             transition: all 0.3s ease;
             display: inline-flex;
             align-items: center;
             gap: 6px;
+            margin-bottom: 40px;   /* 保证贴近底部 */
         }
         
         .reload-btn:hover {
-            color: #aaa;
+            color: #999;
         }
 
         /* ==================== 中间惊喜界面 ==================== */
@@ -203,16 +204,17 @@
 
     <!-- 1. 普通404页面 -->
     <div id="error-page">
-        <div class="error-content">
+        <!-- 上半部分 - 尽量靠近顶部 -->
+        <div class="error-top">
             <div class="error-code">404</div>
             <div class="error-title">页面未找到</div>
             <div class="error-desc">
-                你访问的页面可能暂时失踪了<br>
+                你的智商没有了<br>
                 请尝试刷新重连
             </div>
         </div>
         
-        <!-- 重新连接按钮：无框、小字体、位置靠下 -->
+        <!-- 下半部分 - 重新连接尽量靠近底部 -->
         <button class="reload-btn" onclick="goToSurprise()">
             <span style="font-size: 1.3em;">↻</span>
             <span>重新连接</span>
