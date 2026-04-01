@@ -2,58 +2,391 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>疯狂星期四</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>404 Not Found</title>
     <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            margin: 0;
-            padding: 40px 20px;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: linear-gradient(135deg, #0a0a1f, #1a0033);
-            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            background: #0f0f1a;
+            color: #ddd;
             min-height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* ==================== 普通404页面 ==================== */
+        #error-page {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             text-align: center;
+            z-index: 10;
         }
-        h1 {
-            font-size: 2.6em;
-            margin: 20px 0 10px;
-            text-shadow: 0 0 15px rgba(255, 80, 80, 0.8);
+        
+        .error-code {
+            font-size: clamp(5rem, 18vw, 9rem);
+            font-weight: 700;
+            color: #555;
+            line-height: 1;
+            margin-bottom: 20px;
         }
-        p {
-            font-size: 1.4em;
-            margin: 15px 0;
+        
+        .error-title {
+            font-size: clamp(1.35rem, 5vw, 1.9rem);
+            color: #aaa;
+            margin-bottom: 10px;
         }
-        .qrcode {
-            width: 100%;                  /* 关键：宽度自适应 */
-            max-width: 340px;             /* 最大不超过340px（推荐大小） */
-            height: auto;                 /* 高度自动，等比例缩放 */
-            margin: 30px 0;
-            border: 12px solid #fff;
-            border-radius: 24px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
-            background: white;
-            padding: 15px;
+        
+        .error-desc {
+            font-size: 1.05rem;
+            color: #777;
+            max-width: 360px;
+            margin: 0 auto 45px;
+            line-height: 1.65;
         }
-        .tip {
-            font-size: 1.25em;
+
+        .reload-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 8px 16px;
+            font-size: 0.95rem;
+            color: #888;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .reload-btn:hover {
+            background: rgba(255,255,255,0.1);
+            color: #bbb;
+            border-color: rgba(255,255,255,0.25);
+        }
+
+        /* ==================== 中间惊喜界面 ==================== */
+        #surprise-page {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: linear-gradient(135deg, #1a0033, #0a0a1f);
+            z-index: 15;
+        }
+        
+        .surprise-text {
+            font-size: clamp(1.8rem, 7vw, 2.8rem);
             color: #ffeb3b;
-            margin-top: 20px;
+            margin-bottom: 15px;
+            text-shadow: 0 0 15px rgba(255, 235, 59, 0.5);
+        }
+        
+        .surprise-sub {
+            font-size: clamp(1.1rem, 4vw, 1.5rem);
+            color: #ddd;
+            max-width: 320px;
+            margin-bottom: 50px;
+            line-height: 1.6;
+        }
+
+        .enter-btn {
+            padding: 14px 36px;
+            font-size: 1.15rem;
+            background: linear-gradient(90deg, #ff4d4d, #ff8a65);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(255, 77, 77, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .enter-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(255, 77, 77, 0.6);
+        }
+
+        /* ==================== 疯狂星期四页面 ==================== */
+        #main-page {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: linear-gradient(135deg, #0a0a1f, #1a0033);
+            z-index: 5;
+            overflow: hidden;
+        }
+
+        #particleCanvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        #rippleCanvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 1;
+            pointer-events: auto;
+            opacity: 0.75;
+        }
+
+        h1 {
+            font-size: clamp(1.8em, 5vw, 2.6em);
+            margin: 15px 0 10px;
+            text-shadow: 0 0 12px rgba(255, 80, 80, 0.9), 0 0 20px rgba(255, 120, 120, 0.6);
+            color: #fff;
+            z-index: 2;
+            position: relative;
+        }
+        
+        .desc {
+            font-size: clamp(1.1em, 3.5vw, 1.4em);
+            margin: 10px 0 25px;
+            opacity: 0.9;
+            color: #fff;
+            z-index: 2;
+            position: relative;
+        }
+        
+        .qrcode-wrap {
+            width: 100%;
+            max-width: 320px;
+            margin: 10px 0 25px;
+            z-index: 2;
+            position: relative;
+        }
+        
+        .qrcode {
+            width: 100%;
+            height: auto;
+            border: 8px solid #fff;
+            border-radius: 20px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7), 0 0 30px rgba(255, 80, 80, 0.2);
+            background: white;
+            padding: 10px;
+        }
+        
+        .tip {
+            font-size: clamp(1em, 3vw, 1.25em);
+            color: #ffeb3b;
+            margin: 15px 0 30px;
+            line-height: 1.6;
+            text-shadow: 0 0 8px rgba(255, 235, 59, 0.5);
+            z-index: 2;
+            position: relative;
         }
     </style>
 </head>
 <body>
-    <h1>昨天是疯狂星期四</h1>
-    <p>请v我50 😂</p>
-    
-    <img src="https://i.ibb.co/XxDWdCKc/100.png" 
-         alt="收款码" 
-         class="qrcode">
 
-    <p class="tip">长按上方二维码识别<br>金额随意，多少都是爱 ❤️</p>
-    <p style="font-size: 1em; opacity: 0.8; margin-top: 50px;">（整蛊专用 · 感谢支持）</p>
+    <!-- 1. 普通404页面 -->
+    <div id="error-page">
+        <div class="error-code">404</div>
+        <div class="error-title">页面未找到</div>
+        <div class="error-desc">
+            你访问的页面可能暂时失踪了<br>
+            请尝试刷新重连
+        </div>
+        
+        <button class="reload-btn" onclick="goToSurprise()">
+            <span style="font-size: 1.25em;">↻</span>
+            <span>重新连接</span>
+        </button>
+    </div>
+
+    <!-- 2. 新增：中间惊喜界面 -->
+    <div id="surprise-page">
+        <div class="surprise-text">真聪明</div>
+        <div class="surprise-text" style="font-size: clamp(1.4rem, 5.5vw, 2.2rem); margin-top: -10px;">这都被你找到了！</div>
+        <div class="surprise-sub">点击下方链接看精彩内容</div>
+        
+        <button class="enter-btn" onclick="goToMainPage()">链接</button>
+    </div>
+
+    <!-- 3. 疯狂星期四页面 -->
+    <div id="main-page">
+        <canvas id="particleCanvas"></canvas>
+        <canvas id="rippleCanvas"></canvas>
+        
+        <h1>明天是疯狂星期四</h1>
+        <p class="desc">请v我50 </p>
+        
+        <div class="qrcode-wrap">
+            <img src="https://i.ibb.co/XxDWdCKc/100.png" 
+                 alt="收款码" 
+                 class="qrcode">
+        </div>
+
+        <p class="tip">长按上方二维码识别</p>
+    </div>
+
+    <script>
+        // ==================== 粒子特效 ====================
+        class ParticleEffect {
+            constructor() {
+                this.canvas = document.getElementById('particleCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.particles = [];
+                this.maxParticles = window.innerWidth < 768 ? 80 : 120;
+                this.mouse = { x: null, y: null, radius: 150 };
+                
+                this.resizeCanvas();
+                this.initParticles();
+                this.animate();
+                
+                window.addEventListener('resize', () => this.resizeCanvas());
+                window.addEventListener('mousemove', (e) => this.updateMousePos(e));
+                window.addEventListener('touchmove', (e) => {
+                    e.preventDefault();
+                    if (e.touches[0]) this.updateMousePos(e.touches[0]);
+                }, { passive: false });
+            }
+
+            resizeCanvas() { this.canvas.width = window.innerWidth; this.canvas.height = window.innerHeight; }
+
+            initParticles() {
+                this.particles = [];
+                for (let i = 0; i < this.maxParticles; i++) {
+                    const size = Math.random() * 1.2 + 0.3;
+                    this.particles.push({
+                        x: Math.random() * this.canvas.width,
+                        y: Math.random() * this.canvas.height,
+                        size: size,
+                        speedX: Math.random() * 0.5 - 0.25,
+                        speedY: Math.random() * 0.5 - 0.25,
+                        color: `rgba(${255 - Math.random() * 80}, ${Math.random() * 100}, ${255 - Math.random() * 80}, ${Math.random() * 0.8 + 0.2})`
+                    });
+                }
+            }
+
+            updateMousePos(e) {
+                this.mouse.x = e.clientX || e.pageX;
+                this.mouse.y = e.clientY || e.pageY;
+            }
+
+            drawParticles() {
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                for (let p of this.particles) {
+                    this.ctx.beginPath();
+                    this.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    this.ctx.fillStyle = p.color;
+                    this.ctx.fill();
+                    
+                    p.x += p.speedX; p.y += p.speedY;
+                    
+                    if (p.x < 0 || p.x > this.canvas.width) p.speedX = -p.speedX;
+                    if (p.y < 0 || p.y > this.canvas.height) p.speedY = -p.speedY;
+                    
+                    if (this.mouse.x && this.mouse.y) {
+                        const dx = this.mouse.x - p.x;
+                        const dy = this.mouse.y - p.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        if (distance < this.mouse.radius && distance > 0) {
+                            const force = (this.mouse.radius - distance) / this.mouse.radius;
+                            p.x -= (dx / distance) * force * 0.8;
+                            p.y -= (dy / distance) * force * 0.8;
+                        }
+                    }
+                }
+            }
+
+            animate() {
+                this.drawParticles();
+                requestAnimationFrame(() => this.animate());
+            }
+        }
+
+        // ==================== 水波纹特效 ====================
+        class RippleEffect {
+            constructor() {
+                this.canvas = document.getElementById('rippleCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.ripples = [];
+                this.resizeCanvas();
+                window.addEventListener('resize', () => this.resizeCanvas());
+                
+                this.canvas.addEventListener('click', (e) => this.createRipple(e));
+                this.canvas.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    if (e.touches[0]) this.createRipple(e.touches[0]);
+                }, { passive: false });
+            }
+
+            resizeCanvas() {
+                this.canvas.width = window.innerWidth;
+                this.canvas.height = window.innerHeight;
+            }
+
+            createRipple(e) {
+                const rect = this.canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                this.ripples.push({ x, y, radius: 10, alpha: 0.65, speed: 4.8 });
+            }
+
+            drawRipples() {
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                for (let i = this.ripples.length - 1; i >= 0; i--) {
+                    const r = this.ripples[i];
+                    this.ctx.beginPath();
+                    this.ctx.arc(r.x, r.y, r.radius, 0, Math.PI * 2);
+                    this.ctx.strokeStyle = `rgba(255, 255, 255, ${r.alpha})`;
+                    this.ctx.lineWidth = 3.5;
+                    this.ctx.stroke();
+                    
+                    r.radius += r.speed;
+                    r.alpha -= 0.019;
+                    if (r.alpha <= 0) this.ripples.splice(i, 1);
+                }
+            }
+
+            animate() {
+                this.drawRipples();
+                requestAnimationFrame(() => this.animate());
+            }
+        }
+
+        // ==================== 页面切换函数 ====================
+        function goToSurprise() {
+            document.getElementById('error-page').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('error-page').style.display = 'none';
+                document.getElementById('surprise-page').style.display = 'flex';
+            }, 600);
+        }
+
+        function goToMainPage() {
+            document.getElementById('surprise-page').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('surprise-page').style.display = 'none';
+                document.getElementById('main-page').style.display = 'flex';
+                
+                new ParticleEffect();
+                const ripple = new RippleEffect();
+                ripple.animate();
+                
+                document.title = "疯狂星期四";
+            }, 600);
+        }
+    </script>
 </body>
 </html>
